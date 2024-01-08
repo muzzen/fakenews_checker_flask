@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<hrml lang="en">
+    <head>
+        <title>Fake News Checker</title>
+        <link rel="stylesheet" type= "text/css" href="/static/css/style.css">
+        <link rel="stylesheet" href=
+"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.css">
+</link>
+<script>
+    function clearArea(){
+        document.querySelector("textarea").value = "";
+    }
+
+    function validateForm(){
+        var text = document.querySelector('textarea').value;
+        if (text.trim() == ''){
+            alert('Please enter the news article before submitting.');
+            return false;
+        }
+        return true;
+    }
+
+    function hideMsg(){
+        var mesBox = document.getElementById('box');
+        var mesBox2 = document.getElementById('box2');
+        mesBox.classList.add('hide');
+        mesBox2.classList.add('hide');
+    }
+
+    
+document.addEventListener('DOMContentLoaded', function(){
+	document.getElementById('fileInput').addEventListener('change', function() {
+	  var file = this.files[0];
+	  var reader = new FileReader();
+	  reader.onload = function(e) {
+	    var contents = e.target.result;
+	    document.getElementById('fileContent').value = contents;
+	  };
+	  reader.readAsText(file);
+	});
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var fileInput = document.getElementById('fileInput');
+    var filenameText = document.getElementById('filename');
+    
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files.length > 0) {
+        filenameText.style.color = 'green';
+        filenameText.textContent = fileInput.files[0].name;
+      } else {
+        filenameText.style.color = 'red';
+        filenameText.textContent = 'No file selected';
+      }
+    });
+  });
+
+
+</script> 
+    </head>
+    <body>
+        
+         {% if input_text %}
+         <div class="{{ input_text }}" class="see" id="box">
+            <span class="closebtn" onclick="hideMsg()">&times;</span>            
+            <p>The content is considered as part of <strong>{{ input_text }}</strong> news.</p>
+        </div>
+         {% endif %}
+
+ 
+        <img src="/static/images/logo.png"></img>
+
+        
+        <form method="post",  onsubmit="return validateForm()">
+            
+            <textarea name="news_text" id='fileContent' placeholder="Paste your news article here..."></textarea>
+            
+            
+            <div class="button">
+            <button type="submit" value="Check" id='submit'><i class="fa fa-search" style="font-size:24px"></i></button>
+            <button type="button" value="Clear" id='clear' onclick="clearArea()"><i class="fa fa-terminal" style="font-size:24px; transform:scale(-1,1)"></i></button>
+            </div>
+        </form>
+        <br>
+        <div>
+            <label for="fileInput" class="custom-file-input"><i class="fas fa-file" style="font-size:30px"></i></label>
+            <input type="file" id="fileInput" style="display: none;" accept="text/plain ,text/html">
+            <p id="filename" style="color: red;">No text file selected</p>
+        </div>
+        {% if input_text %}
+        <div class="info" id='box2'>
+          <h3 class='info'>&nbsp;Basic Info</h3>
+          <p style="padding: 0px 0px 0px 5px;">
+            Your news article contains <mark>{{ word }} {%if word == 1%}word {% else %} words {% endif %}</mark>,
+            And among them <mark>{{token}} {%if token == 1%} word {% else %} words{% endif %}</mark> {%if token == 1%} &nbsp;is {%else%} are {%endif%} matched to our model.
+          </p>
+        </div>
+        {% endif %}
+    
+    </body>
+</hrml>
